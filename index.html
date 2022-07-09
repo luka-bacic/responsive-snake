@@ -5,8 +5,361 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Responsive Snake</title>
+        <style>
+            *,
+            ::before,
+            ::after {
+                box-sizing: border-box;
+            }
+            body {
+                font-family: sans-serif;
+                margin: 0;
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+            }
+            h1,
+            p {
+                margin-left: auto;
+                margin-right: auto;
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+            h1 {
+                margin-top: 0;
+                margin-bottom: 0;
+                padding-top: 1rem;
+                padding-bottom: 0.5rem;
+            }
+            p {
+                margin-top: 0;
+            }
+
+            .footer {
+                width: 100%;
+                padding: 1rem;
+                background-color: #2c3e50;
+                color: rgb(240, 239, 239);
+                margin-top: auto;
+                text-align: center;
+            }
+
+            :root {
+                --right-fold: -5 / -1;
+                --full-width: 1 / -1;
+                --outline-color: #000;
+                --snake-color: #00ff00;
+                --border-size: 3px;
+                --fold-border-radius: 1.5rem;
+            }
+
+            .snake-grid {
+                width: 100%;
+                margin-left: auto;
+                margin-right: auto;
+                margin-bottom: 2rem;
+                padding-left: 1rem;
+                padding-right: 1rem;
+                display: grid;
+                grid-template-columns: repeat(20, 1fr);
+                grid-template-rows: repeat(11, 1fr);
+            }
+
+            /* Snake head */
+            header {
+                border-bottom-right-radius: 1000px;
+                border-top-right-radius: 1000px;
+                width: 50px;
+                position: relative;
+                border: var(--border-size) solid var(--outline-color);
+                border-left: none;
+            }
+
+            /* Snake tail */
+            footer {
+                border-bottom-left-radius: 1000px;
+                border-top-left-radius: 1000px;
+                width: 50px;
+                margin-left: auto;
+                border: var(--border-size) solid var(--outline-color);
+                border-right: none;
+            }
+
+            header::after,
+            header::before {
+                content: "";
+                position: absolute;
+                display: block;
+            }
+            header::after {
+                width: 6px;
+                height: 6px;
+                border-radius: 6px;
+                top: 25%;
+                left: 50%;
+                background: var(--outline-color);
+            }
+
+            header::before {
+                background-color: var(--snake-color);
+                width: var(--border-size);
+                top: 0;
+                bottom: 0;
+                left: calc(-1 * var(--border-size));
+            }
+
+            /* Snake body */
+            section {
+                height: 50px;
+            }
+
+            section,
+            header,
+            footer {
+                background-color: var(--snake-color);
+            }
+
+            /* Odd sections are the long horizontal parts */
+            section:nth-child(2n) {
+                border: var(--border-size) solid var(--outline-color);
+            }
+            /* Even sections are the "folds". The folds can only have left and
+            right border, and they use pseudoelements to cover up the top and bottom border
+            from the horizontal parts */
+            section:nth-child(2n + 1) {
+                border-left: var(--border-size) solid var(--outline-color);
+                border-right: var(--border-size) solid var(--outline-color);
+                position: relative;
+            }
+            /* Create the pseudoelements that cover top and bottom borders */
+            section:nth-child(2n + 1)::before,
+            section:nth-child(2n + 1)::after {
+                content: "";
+                position: absolute;
+                left: 0;
+                right: 0;
+                height: var(--border-size);
+                background-color: var(--snake-color);
+            }
+            section:nth-child(2n + 1)::before {
+                top: calc(-1 * var(--border-size));
+            }
+            section:nth-child(2n + 1)::after {
+                bottom: calc(-1 * var(--border-size));
+            }
+
+            /* Remove left border from the first section so it blends with the tail */
+            section:first-of-type {
+                border-left: none;
+            }
+
+            section:nth-of-type(1) {
+                grid-column: 2 / -1;
+                border-top-right-radius: var(--fold-border-radius);
+            }
+            section:nth-of-type(2) {
+                grid-column: var(--right-fold);
+            }
+            section:nth-of-type(3) {
+                grid-column: var(--full-width);
+                grid-row: 3;
+                border-bottom-right-radius: var(--fold-border-radius);
+                border-top-left-radius: var(--fold-border-radius);
+            }
+            section:nth-of-type(4) {
+                grid-column: 1;
+                grid-row: 4;
+            }
+            section:nth-of-type(5) {
+                grid-column: var(--full-width);
+                grid-row: 5;
+                border-top-right-radius: var(--fold-border-radius);
+                border-bottom-left-radius: var(--fold-border-radius);
+            }
+            section:nth-of-type(6) {
+                grid-column: var(--right-fold);
+                grid-row: 6;
+            }
+            section:nth-of-type(7) {
+                grid-column: var(--full-width);
+                grid-row: 7;
+                border-bottom-right-radius: var(--fold-border-radius);
+                border-top-left-radius: var(--fold-border-radius);
+            }
+            section:nth-of-type(8) {
+                grid-column: 1;
+                grid-row: 8;
+            }
+            section:nth-of-type(9) {
+                grid-column: var(--full-width);
+                grid-row: 9;
+                border-top-right-radius: var(--fold-border-radius);
+                border-bottom-left-radius: var(--fold-border-radius);
+            }
+            section:nth-of-type(10) {
+                grid-column: var(--right-fold);
+                grid-row: 10;
+            }
+            section:nth-of-type(11) {
+                grid-column: 10 / -1;
+                grid-row: 11;
+                border-bottom-right-radius: var(--fold-border-radius);
+            }
+            header {
+                grid-row: 11;
+                grid-column: 9;
+                transform: scale(-1);
+            }
+
+            @media (min-width: 24rem) {
+                :root {
+                    --right-fold: -4 / -1;
+                }
+            }
+
+            @media (min-width: 34rem) {
+                :root {
+                    --right-fold: -3 / -1;
+                }
+
+                .snake-grid {
+                    width: 34rem;
+                    grid-template-rows: repeat(9, 1fr);
+                }
+
+                section:nth-of-type(11),
+                section:nth-of-type(10) {
+                    display: none;
+                }
+                section:nth-of-type(9) {
+                    grid-column: 1 / 10;
+                    border-top-right-radius: unset;
+                }
+                header {
+                    transform: none;
+                    grid-row: 9;
+                    grid-column: 10;
+                }
+            }
+            @media (min-width: 48rem) {
+                .snake-grid {
+                    width: 48rem;
+                    grid-template-rows: repeat(7, 1fr);
+                }
+
+                section:nth-of-type(8),
+                section:nth-of-type(9) {
+                    display: none;
+                }
+                section:nth-of-type(7) {
+                    grid-column: -1 / 6;
+                    border-top-left-radius: unset;
+                }
+                header {
+                    grid-column: 5;
+                    grid-row: 7;
+                    transform: scale(-1);
+                }
+            }
+            @media (min-width: 62rem) {
+                :root {
+                    --right-fold: -2;
+                }
+                .snake-grid {
+                    width: 62rem;
+                    grid-template-rows: repeat(5, 1fr);
+                }
+
+                section:nth-of-type(6),
+                section:nth-of-type(7) {
+                    display: none;
+                }
+                section:nth-of-type(5) {
+                    grid-column: 1 / 15;
+                    border-top-right-radius: unset;
+                }
+                header {
+                    transform: none;
+                    grid-row: 5;
+                    grid-column: 15;
+                }
+            }
+            @media (min-width: 75rem) {
+                .snake-grid {
+                    width: 75rem;
+                    grid-template-rows: repeat(3, 1fr);
+                }
+                section:nth-of-type(4),
+                section:nth-of-type(5) {
+                    display: none;
+                }
+                section:nth-of-type(3) {
+                    grid-column: 5 / -1;
+                    grid-row: 3;
+                    border-top-left-radius: unset;
+                }
+                header {
+                    grid-row: 3;
+                    grid-column: 4;
+                    transform: scale(-1);
+                    margin-left: auto;
+                }
+            }
+
+            @media (min-width: 90rem) {
+                .snake-grid {
+                    width: 90rem;
+                }
+                section:nth-of-type(3) {
+                    grid-column: 16 / -1;
+                }
+                header {
+                    grid-row: 3;
+                    grid-column: 15;
+                }
+            }
+            @media (min-width: 112rem) {
+                .snake-grid {
+                    width: 112rem;
+                    grid-template-rows: 1fr;
+                }
+                section:nth-of-type(2),
+                section:nth-of-type(3) {
+                    display: none;
+                }
+                section:nth-of-type(1) {
+                    grid-column: 2 / 20;
+                    border-top-right-radius: unset;
+                }
+                header {
+                    grid-row: 1;
+                    grid-column: 20;
+                    margin-left: unset;
+                    transform: none;
+                }
+            }
+        </style>
     </head>
     <body>
-        <p>test</p>
+        <h1>Responsive Snake</h1>
+        <p>Resize your browser window!</p>
+
+        <div class="snake-grid" aria-hidden="true">
+            <footer></footer>
+            <section></section>
+            <section></section>
+            <section></section>
+            <section></section>
+            <section></section>
+            <section></section>
+            <section></section>
+            <section></section>
+            <section></section>
+            <section></section>
+            <section></section>
+            <header></header>
+        </div>
+
+        <div class="footer">What is this?</div>
     </body>
 </html>
