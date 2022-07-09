@@ -35,6 +35,58 @@
                 margin-top: 0;
             }
 
+            .layout-grid {
+                display: grid;
+                grid-template-columns: 2fr min-content min-content 2fr;
+                grid-template-rows: 2rem 1fr;
+                row-gap: 1rem;
+                margin-left: auto;
+                margin-right: auto;
+                margin-bottom: 2rem;
+                padding-left: 1rem;
+                padding-right: 1rem;
+                width: 100%;
+            }
+
+            label[for="slither"],
+            label[for="shrink"],
+            #slither,
+            #shrink {
+                grid-row: 1;
+                align-self: center;
+            }
+            label[for="slither"] {
+                grid-column: 1;
+                justify-self: flex-end;
+            }
+            label[for="shrink"] {
+                grid-column: 4;
+            }
+            #slither {
+                grid-column: 2;
+            }
+            #shrink {
+                grid-column: 3;
+            }
+
+            input[type="radio"] {
+                margin-top: 0;
+                margin-bottom: 0;
+            }
+            .snake-grid,
+            .snake-flex {
+                grid-column: 1 / -1;
+                grid-row: 2;
+            }
+
+            /* Display logic */
+            #slither:checked ~ .snake-grid {
+                display: grid;
+            }
+            #shrink:checked ~ .snake-flex {
+                display: flex;
+            }
+
             .footer {
                 width: 100%;
                 padding: 1rem;
@@ -53,18 +105,7 @@
                 --fold-border-radius: 1.5rem;
             }
 
-            .snake-grid {
-                width: 100%;
-                margin-left: auto;
-                margin-right: auto;
-                margin-bottom: 2rem;
-                padding-left: 1rem;
-                padding-right: 1rem;
-                display: grid;
-                grid-template-columns: repeat(20, 1fr);
-                grid-template-rows: repeat(11, 1fr);
-            }
-
+            /* Common snake css */
             /* Snake head */
             header {
                 border-bottom-right-radius: 1000px;
@@ -99,7 +140,6 @@
                 left: 50%;
                 background: var(--outline-color);
             }
-
             header::before {
                 background-color: var(--snake-color);
                 width: var(--border-size);
@@ -117,6 +157,14 @@
             header,
             footer {
                 background-color: var(--snake-color);
+            }
+
+            /* Snake slither css */
+            .snake-grid {
+                display: none;
+                width: 100%;
+                grid-template-columns: repeat(20, 1fr);
+                grid-template-rows: repeat(11, 1fr);
             }
 
             /* Odd sections are the long horizontal parts */
@@ -222,8 +270,10 @@
                     --right-fold: -3 / -1;
                 }
 
-                .snake-grid {
+                layout-grid {
                     width: 34rem;
+                }
+                .snake-grid {
                     grid-template-rows: repeat(9, 1fr);
                 }
 
@@ -242,8 +292,10 @@
                 }
             }
             @media (min-width: 48rem) {
-                .snake-grid {
+                .layout-grid {
                     width: 48rem;
+                }
+                .snake-grid {
                     grid-template-rows: repeat(7, 1fr);
                 }
 
@@ -265,8 +317,10 @@
                 :root {
                     --right-fold: -2;
                 }
-                .snake-grid {
+                .layout-grid {
                     width: 62rem;
+                }
+                .snake-grid {
                     grid-template-rows: repeat(5, 1fr);
                 }
 
@@ -285,8 +339,10 @@
                 }
             }
             @media (min-width: 75rem) {
-                .snake-grid {
+                .layout-grid {
                     width: 75rem;
+                }
+                .snake-grid {
                     grid-template-rows: repeat(3, 1fr);
                 }
                 section:nth-of-type(4),
@@ -307,7 +363,7 @@
             }
 
             @media (min-width: 90rem) {
-                .snake-grid {
+                .layout-grid {
                     width: 90rem;
                 }
                 section:nth-of-type(3) {
@@ -319,8 +375,10 @@
                 }
             }
             @media (min-width: 112rem) {
-                .snake-grid {
+                .layout-grid {
                     width: 112rem;
+                }
+                .snake-grid {
                     grid-template-rows: 1fr;
                 }
                 section:nth-of-type(2),
@@ -338,26 +396,51 @@
                     transform: none;
                 }
             }
+
+            /* Snake shrink css */
+            .snake-flex {
+                display: none;
+                width: 100%;
+            }
+            .snake-flex section {
+                flex-grow: 1;
+                border-radius: 0;
+            }
+            .snake-flex header {
+                transform: none;
+            }
         </style>
     </head>
     <body>
         <h1>Responsive Snake</h1>
         <p>Resize your browser window!</p>
 
-        <div class="snake-grid" aria-hidden="true">
-            <footer></footer>
-            <section></section>
-            <section></section>
-            <section></section>
-            <section></section>
-            <section></section>
-            <section></section>
-            <section></section>
-            <section></section>
-            <section></section>
-            <section></section>
-            <section></section>
-            <header></header>
+        <div class="layout-grid">
+            <label for="slither">Slither</label>
+            <label for="shrink">Shrink</label>
+            <input type="radio" name="mode" id="slither" />
+            <input type="radio" name="mode" id="shrink" />
+
+            <div class="snake-grid" aria-hidden="true">
+                <footer></footer>
+                <section></section>
+                <section></section>
+                <section></section>
+                <section></section>
+                <section></section>
+                <section></section>
+                <section></section>
+                <section></section>
+                <section></section>
+                <section></section>
+                <section></section>
+                <header></header>
+            </div>
+            <div class="snake-flex">
+                <footer></footer>
+                <section></section>
+                <header></header>
+            </div>
         </div>
 
         <div class="footer">What is this?</div>
