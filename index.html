@@ -5,7 +5,21 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Responsive Snake</title>
+        <meta
+            name="description"
+            content="If a snake was responsive, would it be like this or like this?"
+        />
         <style>
+            :root {
+                --right-fold: -5 / -1;
+                --full-width: 1 / -1;
+                --outline-color: #000;
+                --snake-color: #00ff00;
+                --border-size: 3px;
+                --fold-border-radius: 1.5rem;
+                --section-size: 3.125rem;
+            }
+
             *,
             ::before,
             ::after {
@@ -56,6 +70,14 @@
                 width: 100%;
             }
 
+            .footer {
+                width: 100%;
+                padding: 1rem;
+                background-color: #2c3e50;
+                margin-top: auto;
+                text-align: center;
+            }
+
             label[for="slither"],
             label[for="shrink"],
             #slither,
@@ -81,93 +103,74 @@
                 margin-top: 0;
                 margin-bottom: 0;
             }
-            .snake-grid,
-            .snake-flex {
+            .snake-den {
                 grid-column: 1 / -1;
                 grid-row: 2;
             }
 
             /* Display logic */
-            #slither:checked ~ .snake-grid {
+            #slither:checked ~ .snake-den {
                 display: grid;
             }
-            #shrink:checked ~ .snake-flex {
+            #shrink:checked ~ .snake-den {
                 display: flex;
-            }
-
-            .footer {
-                width: 100%;
-                padding: 1rem;
-                background-color: #2c3e50;
-                margin-top: auto;
-                text-align: center;
-            }
-
-            :root {
-                --right-fold: -5 / -1;
-                --full-width: 1 / -1;
-                --outline-color: #000;
-                --snake-color: #00ff00;
-                --border-size: 3px;
-                --fold-border-radius: 1.5rem;
             }
 
             /* Common snake css */
             /* Snake head */
             header {
-                border-bottom-right-radius: 1000px;
-                border-top-right-radius: 1000px;
-                width: 50px;
                 position: relative;
-                border: var(--border-size) solid var(--outline-color);
-                border-left: none;
+                width: 60px;
+            }
+            header svg {
+                position: absolute;
+                height: 82px;
+                left: -3px;
+                top: -19px;
+            }
+            /* This covers the borders between the body and head */
+            header::after {
+                content: "";
+                position: absolute;
+                display: block;
+                background-color: var(--snake-color);
+                width: 6px;
+                top: var(--border-size);
+                bottom: var(--border-size);
+                left: calc(-1 * var(--border-size));
             }
 
             /* Snake tail */
             footer {
-                border-bottom-left-radius: 1000px;
-                border-top-left-radius: 1000px;
-                width: 50px;
+                position: relative;
+                width: var(--section-size);
                 margin-left: auto;
-                border: var(--border-size) solid var(--outline-color);
-                border-right: none;
             }
-
-            header::after,
-            header::before {
+            footer svg {
+                position: absolute;
+                height: var(--section-size);
+                right: -2px;
+            }
+            /* This covers the border between the tail and rest of body */
+            footer::after {
                 content: "";
                 position: absolute;
+                right: -4px;
                 display: block;
-            }
-            header::after {
-                width: 6px;
-                height: 6px;
-                border-radius: 6px;
-                top: 25%;
-                left: 50%;
-                background: var(--outline-color);
-            }
-            header::before {
                 background-color: var(--snake-color);
-                width: var(--border-size);
-                top: 0;
-                bottom: 0;
-                left: calc(-1 * var(--border-size));
+                width: 15px;
+                top: var(--border-size);
+                bottom: var(--border-size);
             }
 
             /* Snake body */
             section {
-                height: 50px;
-            }
-
-            section,
-            header,
-            footer {
+                height: var(--section-size);
                 background-color: var(--snake-color);
             }
 
             /* Snake slither css */
-            .snake-grid {
+            .snake-den {
                 display: none;
                 width: 100%;
                 grid-template-columns: repeat(20, 1fr);
@@ -280,7 +283,7 @@
                 layout-grid {
                     width: 34rem;
                 }
-                .snake-grid {
+                .snake-den {
                     grid-template-rows: repeat(9, 1fr);
                 }
 
@@ -302,7 +305,7 @@
                 .layout-grid {
                     width: 48rem;
                 }
-                .snake-grid {
+                .snake-den {
                     grid-template-rows: repeat(7, 1fr);
                 }
 
@@ -327,7 +330,7 @@
                 .layout-grid {
                     width: 62rem;
                 }
-                .snake-grid {
+                .snake-den {
                     grid-template-rows: repeat(5, 1fr);
                 }
 
@@ -349,7 +352,7 @@
                 .layout-grid {
                     width: 75rem;
                 }
-                .snake-grid {
+                .snake-den {
                     grid-template-rows: repeat(3, 1fr);
                 }
                 section:nth-of-type(4),
@@ -385,7 +388,7 @@
                 .layout-grid {
                     width: 112rem;
                 }
-                .snake-grid {
+                .snake-den {
                     grid-template-rows: 1fr;
                 }
                 section:nth-of-type(2),
@@ -405,15 +408,15 @@
             }
 
             /* Snake shrink css */
-            .snake-flex {
+            #shrink:checked ~ .snake-den section {
                 display: none;
-                width: 100%;
             }
-            .snake-flex section {
+            #shrink:checked ~ .snake-den section:first-of-type {
+                display: block;
                 flex-grow: 1;
                 border-radius: 0;
             }
-            .snake-flex header {
+            #shrink:checked ~ .snake-den header {
                 transform: none;
             }
         </style>
@@ -428,8 +431,21 @@
             <input type="radio" name="mode" id="slither" checked="" />
             <input type="radio" name="mode" id="shrink" />
 
-            <div class="snake-grid" aria-hidden="true">
-                <footer></footer>
+            <div class="snake-den" aria-hidden="true">
+                <footer>
+                    <svg
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 47 53"
+                    >
+                        <path
+                            d="M33.361 2H45v49H31.337l-15.18-12.783L3 27.033l13.157-15.446L33.36 2Z"
+                            fill="#0F0"
+                            stroke="#000"
+                            stroke-width="3"
+                        />
+                    </svg>
+                </footer>
                 <section></section>
                 <section></section>
                 <section></section>
@@ -441,12 +457,27 @@
                 <section></section>
                 <section></section>
                 <section></section>
-                <header></header>
-            </div>
-            <div class="snake-flex">
-                <footer></footer>
-                <section></section>
-                <header></header>
+                <header>
+                    <svg
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 75 82"
+                    >
+                        <path
+                            d="M2 67.792v-47c16-12.5 12-9.167 37-17.5 10-3.333 18.5 0 11.5 7.5C38.538 23.61 39.833 25.46 34 28.292c-10.5 5.1-17 19.3 0 29.5 10 6 17.167 15.667 16.5 21.5-4.333 3-21.525-2.546-27-5-14.5-6.5-16.333-6.833-21.5-6.5Z"
+                            fill="#0F0"
+                            stroke="#000"
+                            stroke-width="3"
+                        />
+                        <path
+                            d="M61.371 44.818 26 38v10.91L61.371 53 71.5 59l-6.737-10.09L73 40.726l-11.629 4.091Z"
+                            fill="red"
+                            stroke="#000"
+                            stroke-width="3"
+                        />
+                        <circle cx="24.5" cy="19.5" r="2.5" fill="#000" />
+                    </svg>
+                </header>
             </div>
         </div>
 
