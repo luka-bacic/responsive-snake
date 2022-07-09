@@ -1,0 +1,15 @@
+{
+    "name": "responsive-snake",
+    "version": "1.0.0",
+    "description": "How would a snake adapt on a responsive website?",
+    "main": "index.js",
+    "repository": "https://github.com/luka-bacic/responsive-snake",
+    "author": "Luka Bacic",
+    "license": "MIT",
+    "devDependencies": {
+        "browser-sync": "^2.27.10"
+    },
+    "scripts": {
+        "start": "yarn browser-sync start --server --watch"
+    }
+}
